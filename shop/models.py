@@ -11,7 +11,6 @@ class Category(models.Model):
     class Meta:
         verbose_name = 'Категория'
         verbose_name_plural = 'Категории'
-        # unique_together = (['slug', 'parent'])
 
     def __str__(self):
         return self.name
@@ -47,12 +46,6 @@ class Product(models.Model):
 class ProductManager(models.Manager):
 
     def get_queryset(self):
-        """
-        Returns a queryset of products that are available.
-
-        Returns:
-            QuerySet: A queryset of products that are available.
-        """
         return super(ProductManager, self).get_queryset().filter(available=True)
 
 

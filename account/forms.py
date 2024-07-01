@@ -48,8 +48,6 @@ class UserUpdateForm(forms.ModelForm):
         self.fields['email'].label = 'Your Email Address'
         self.fields['email'].required = True
 
-
-
     class Meta:
         model = User
         fields = ['username', 'email']

@@ -8,19 +8,16 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
+    <link rel="stylesheet" href="{% static 'css/style.css'%}" type="text/css">
+
+
     <link href="https://cdn.jsdelivr.net/npm/@coreui/coreui@5.0.2/dist/css/coreui.min.css" rel="stylesheet" integrity="sha384-39e9UaGkm/+yp6spIsVfzcs3j7ac7G2cg0hzmDvtG11pT1d7YMnOC26w4wMPhzsL" crossorigin="anonymous">
     
     <!-- CSS -->
     
-    <link
-    rel="stylesheet"
-    href="https://bootswatch.com/5/flatly/bootstrap.min.css"
-    />
+    <link rel="stylesheet" href="https://bootswatch.com/5/flatly/bootstrap.min.css" />
     
-    <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
-    />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"/>
     
     <!-- JavaScript -->
     
@@ -53,69 +50,10 @@
       crossorigin="anonymous"
     ></script>
 
-    <title>BigCorp</title>
+    <title>Shop</title>
 
     <link rel="icon" href="{% static 'images/favicon1.png' %}">
 
-    <style>
-
-      .badge {
-        padding-left: 9px;
-        padding-right: 9px;
-        -webkit-border-radius: 9px;
-        -moz-border-radius: 9px;
-        border-radius: 9px;
-      }
-  
-      .label-warning[href],
-      .badge-warning[href] {
-        background-color: #c67605;
-      }
-      #lblCartCount {
-          font-size: 12px;
-          background: #3c9700;
-          color: #fff;
-          padding: 0 5px;
-          vertical-align: top;
-          margin-left: -2px; 
-      }
-  
-
-
-      a {
-        font-size: 14px;
-        font-weight: 700;
-      }
-      .superNav {
-        font-size: 13px;
-      }
-      .form-control {
-        outline: none !important;
-        box-shadow: none !important;
-      }
-      .navbar-nav li:hover > ul.dropdown-menu {
-        display: block;
-      }
-      .dropdown-submenu {
-        position: relative;
-      }
-      .dropdown-submenu > .dropdown-menu {
-        top: 0;
-        left: 100%;
-        margin-top: -6px;
-      }
-
-      /* rotate caret on hover */
-      .dropdown-menu > li > a:hover:after {
-        text-decoration: underline;
-        transform: rotate(-90deg);
-      }
-      @media screen and (max-width: 540px) {
-        .centerOnMobile {
-          text-align: center;
-        }
-      }
-    </style>
   </head>
 
   <body>
@@ -141,8 +79,7 @@
               ><i class="fa-solid fa-magnifying-glass"></i></span>
             <input
               type="text"
-              class="form-control border-success"
-              style="color: #7a7a7a"/>
+              class="form-control border-success"/>
             <button class="btn btn-success text-white">Search</button>
           </div>
         </div>
@@ -154,63 +91,10 @@
                 ><i class="fa-solid fa-magnifying-glass"></i></span>
               <input
                 type="text"
-                class="form-control border-success"
-                style="color: #7a7a7a"/>
+                class="form-control border-success"/>
               <button class="btn btn-success text-white">Поиск</button>
             </div>
           </div>
-          <ul class="navbar-nav ms-auto">
-            {% for i in categories %}
-            
-            {% if not i.children.all %}
-              <li class="nav-item">
-                <a class="nav-link" href="{{i.get_absolute_url}}">{{i.name|upper }}</a>
-              </li>
-            {% else %}
-              <li class="nav-item dropdown">
-                <a
-                  class="nav-link dropdown-toggle"
-                  href="{{i.get_absolute_url}}"
-                  id="navbarDropdownMenuLink"
-                  data-toggle="dropdown"
-                  aria-haspopup="true"
-                  aria-expanded="false">
-                {{i.name|upper}}
-              </a>
-                <ul
-                  class="dropdown-menu"
-                  aria-labelledby="navbarDropdownMenuLink">
-                  {% for obj in i.children.all %} {% if not obj.children.all %}
-                    <li><a class="dropdown-item" href="{{obj.get_absolute_url}}">{{obj.name|upper}}</a></li>
-                  {% else %}
-                    <li class="dropdown-submenu">
-                      <a class="dropdown-item dropdown-toggle" href="{{obj.get_absolute_url}}">{{obj.name|upper}}</a>
-                      
-                      <ul class="dropdown-menu">
-                    {% for subobj in obj.children.all %} {% if not subobj.children.all %}
-                        <li>
-                          <a class="dropdown-item" href="{{subobj.get_absolute_url}}">{{subobj.name|upper}}</a>
-                        </li>
-                    {% else %}
-                    <li class="dropdown-submenu">
-                      <a class="dropdown-item dropdown-toggle" href="{{subobj.get_absolute_url}}">{{subobj.name|upper}}</a>
-                      
-                      <ul class="dropdown-menu">
-                        {% for lastobj in subobj.children.all %} 
-                        <li>
-                          <a class="dropdown-item" href="{{lastobj.get_absolute_url}}">{{lastobj.name|upper}}</a>
-                        </li>
-                       {% endfor %}
-                      </ul>
-                    </li>
-                    {% endif %} {% endfor %}
-                  </ul>
-                </li>
-                {% endif %} {% endfor %}
-              </ul>
-            </li>
-            {% endif %} {% endfor %}
-          </ul>
           <ul class="navbar-nav ms-auto">
             <li class="nav-item">
               <a class="nav-link mx-2 text-uppercase" tabindex="-1" href="{% url 'cart:cart-view' %}"

@@ -1,5 +1,4 @@
 from decimal import Decimal
-from django.conf import settings
 from shop.models import ProductProxy
 
 
@@ -12,8 +11,10 @@ class Cart(object):
         """
         self.session = request.session
         cart = self.session.get('session_key')
+
         if not cart:
             cart = self.session['session_key'] = {}
+            
         self.cart = cart
 
 
@@ -42,7 +43,7 @@ class Cart(object):
             item['total'] = item['price'] * item['qty']
             yield item
 
-    def add(self, product, quantity=1, update_quantity=False):
+    def add(self, product, quantity=1):
         """
         Добавить продукт в корзину или обновить его количество.
         """
@@ -54,14 +55,6 @@ class Cart(object):
         self.cart[product_id]['qty'] = quantity
 
         self.session.modified = True
-
-
-
-    # def save(self):
-    #     # Обновление сессии cart
-    #     self.session[settings.CART_SESSION_ID] = self.cart
-    #     # Отметить сеанс как "измененный", чтобы убедиться, что он сохранен
-    #     self.session.modified = True
 
 
     def delete(self, product):
@@ -78,15 +71,3 @@ class Cart(object):
 
     def get_total_price(self):
         return sum(Decimal(item['price']) * item['qty'] for item in self.cart.values())
-
-    # def clear(self):
-    #     # удаление корзины из сессии
-    #     del self.session[settings.CART_SESSION_ID]
-    #     self.session.modified = True
-
-
-    # def get_total_price(self):
-    #     """
-    #     Подсчет стоимости товаров в корзине.
-    #     """
-    #     return sum(Decimal(item['price']) * item['quantity'] for item in self.cart.values())

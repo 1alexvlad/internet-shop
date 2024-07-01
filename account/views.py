@@ -42,8 +42,6 @@ def register_user(request):
 
 def email_verification(request):
     return render(request, 'account/email/email-verification.html')
-# 'account/email/email-verification-sent.html'
-    # return render(request, 'account:email/email_verification')
 
 
 def login_user(request):

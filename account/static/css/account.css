@@ -1,0 +1,23 @@
+body{
+    background-color: gray;
+}
+
+.btn-register{
+    transition: 0.5s;
+}
+
+.btn-register:hover {
+    background-color: forestgreen;
+}
+
+.btn-register-delete:hover {
+    background-color: red;
+}
+
+#timer {
+    font-family: sans-serif;
+    font-size: 24px;
+    color: red;
+    font-weight: bold;
+    display: inline-block;
+}
