@@ -74,6 +74,11 @@ def login_user(request):
 
 
 def logout_user(request):
+    session_keys = list(request.session.keys())
+    for key in session_keys:
+        if key == 'session_key':
+            continue
+        del request.session[key]
     auth.logout(request)
     return redirect('shop:products')
 

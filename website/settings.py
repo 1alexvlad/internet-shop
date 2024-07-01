@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     'shop.apps.ShopConfig',
     'cart.apps.CartConfig',
     'account.apps.AccountConfig',
+    'payment.apps.PaymentConfig',
 
     # сторонние библиотеки
     'mathfilters',
@@ -172,3 +173,6 @@ EMAIL_USE_TLS = True
 # DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 # SERVER_EMAIL = EMAIL_HOST_USER
 # EMAIL_ADMIN = EMAIL_HOST_USER
+
+
+APPEND_SLASH = True
