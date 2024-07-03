@@ -15,9 +15,13 @@ class ShippingAddress(models.Model):
 
     user = models.ForeignKey(
         User, on_delete=models.CASCADE, blank=True, null=True)
+    
+    class Meta:
+        verbose_name = 'Доставка заказа'
+        verbose_name_plural = 'Доставка заказов'
 
     def __str__(self):
-        return "Shipping Address" + str(self.id)
+        return "Доставка №" + str(self.id)
 
 
 class Order(models.Model):
@@ -29,8 +33,12 @@ class Order(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        verbose_name = 'Заказ'
+        verbose_name_plural = 'Заказы'
+
     def __str__(self):
-        return "Order" + str(self.id)
+        return "Заказ №" + str(self.id)
 
 
 class OrderItem(models.Model):

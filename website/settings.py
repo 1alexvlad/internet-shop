@@ -176,3 +176,9 @@ EMAIL_USE_TLS = True
 
 
 APPEND_SLASH = True
+
+
+# Yookassa
+YOOKASSA_SECRET_KEY = os.environ.get('YOOKASSA_SECRET_KEY')
+YOOKASSA_SHOP_ID = os.environ.get('YOOKASSA_SHOP_ID')
+
