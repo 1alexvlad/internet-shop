@@ -7,7 +7,7 @@ from django.contrib.auth import get_user_model, authenticate, login, logout
 from django.contrib.auth.models import auth
 from django_email_verification import send_email
 
-from .forms import CreateUserForm, LoginForm, UserUpdateForm
+from .forms import UserCreateForm, LoginForm, UserUpdateForm
 
 User = get_user_model()
 
@@ -15,17 +15,16 @@ User = get_user_model()
 def register_user(request):
     
     if request.method == 'POST':
-        form = CreateUserForm(request.POST)
+        form = UserCreateForm(request.POST)
 
         if form.is_valid():
             form.save(commit=False)
-            user_email = form.cleaned_data.get('email')
             user_username = form.cleaned_data.get('username')
             user_password = form.cleaned_data.get('password1')
 
             # Создаем user
             user = User.objects.create_user(
-                username = user_username, email=user_email, password=user_password
+                username = user_username, password=user_password
             )
 
             user.is_active = False
@@ -35,7 +34,7 @@ def register_user(request):
             return redirect('/account/email-verification/')
             
     else:
-        form = CreateUserForm()
+        form = UserCreateForm()
 
     return render(request, 'account/register.html', {'form': form})
 
@@ -70,7 +69,7 @@ def login_user(request):
         
     context = {'form': form}    
 
-    return render(request, 'account/login.html', context)
+    return render(request, 'account/login/login.html', context)
 
 
 def logout_user(request):

@@ -8,7 +8,6 @@ app_name = 'account'
 urlpatterns = [
     # Регистрация и верификация
     path('register/', views.register_user, name='register'),
-    path('email-verification/', views.email_verification, name='email-verification'),
     
     # Вход и выход
     path('login/', views.login_user, name='login'),
