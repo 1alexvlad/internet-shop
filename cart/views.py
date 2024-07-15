@@ -1,16 +1,15 @@
-from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse
+from django.shortcuts import get_object_or_404, render
 
-from .cart import Cart
 from shop.models import ProductProxy
+from .cart import Cart
+
 
 def cart_view(request):
     cart = Cart(request)
-
     context = {
         'cart': cart
     }
-
     return render(request, 'cart/cart-view.html', context)
 
 
@@ -28,7 +27,7 @@ def cart_add(request):
 
         cart_qty = cart.__len__()
 
-        response = JsonResponse({'quantity': cart_qty, "product":product.title})
+        response = JsonResponse({'qty': cart_qty, "product":product.title})
 
         return response
 
@@ -44,7 +43,7 @@ def cart_delete(request):
 
         cart_total = cart.get_total_price()
 
-        response = JsonResponse({'quantity': cart_qty, 'total': cart_total})
+        response = JsonResponse({'qty': cart_qty, 'total': cart_total})
 
         return response
 
@@ -60,6 +59,6 @@ def cart_update(request):
         cart_qty = cart.__len__()
         cart_total = cart.get_total_price()
 
-        response = JsonResponse({'quantity': cart_qty, 'total': cart_total})
+        response = JsonResponse({'qty': cart_qty, 'total': cart_total})
 
         return response

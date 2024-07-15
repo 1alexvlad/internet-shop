@@ -7,6 +7,11 @@
 {% endblock %}
 
 {% block content %}
+<style>
+  /* .col-md-7.col-lg-7.ps-md-3.ps-lg-5 {
+    background-color: gray;
+  } */
+</style>
   <div class="container">
     <main class="pt-5">
       <div class="row g-3">
@@ -19,11 +24,11 @@
 
           <hr />
 
-          <p>{{ product.description }}</p>
+          <p><strong>{{ product.description }}</strong></p>
           <div class="border">
             <div class="col border-bottom">
               <div class="row p-3">
-                <div class="col-6">Цена</div>
+                <div class="col-6"><strong>Цена</strong></div>
                 <div class="col-6 text-end">
                   <span class="h4 fw-bold">{{ product.price }} ₽</span>
                 </div>
@@ -33,7 +38,7 @@
             <div class="col">
               <div class="row p-3">
                 <div class="col-6">
-                  <label for="select">Количество</label>
+                  <label for="select"><strong>Количество</strong></label>
                   &nbsp;<select id="select">
                     <option value="1">1</option>
                     <option value="2">2</option>
@@ -54,6 +59,7 @@
     </main>
   </div>
 
+  <!-- <script src="{% static 'js/detail_product.js' %}"></script> -->
   <script>
     $(document).on('click', '#add-button', function (e) {
       e.preventDefault()

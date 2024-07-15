@@ -7,7 +7,32 @@ from django.core.paginator import Paginator
 
 
 def products_view(request):
-    products = ProductProxy.objects.all()
+    # categories = Category.objects.all()
+
+    # context = {'categories': categories}
+
+    return render(request, 'base.html')
+    # products = ProductProxy.objects.all()
+    # sort_by = request.GET.get('sort', 'default')
+
+    # if sort_by == 'asc':
+    #     products = products.order_by('price')
+    # elif sort_by == 'desc':
+    #     products = products.order_by('-price')
+    # else:
+    #     products = products.order_by('id')
+
+    # paginator = Paginator(products, 4)
+    # page_number = request.GET.get('page')
+    # page_obj = paginator.get_page(page_number)
+
+    # return render(request, 'base.html', {'page_obj': page_obj, 'sort_by': sort_by})
+
+def catalog_view(request, category_slug):
+    if category_slug == 'all':
+        products = ProductProxy.objects.all()
+    else:
+        products = ProductProxy.objects.filter(category__slug=category_slug)
     sort_by = request.GET.get('sort', 'default')
 
     if sort_by == 'asc':
@@ -21,7 +46,7 @@ def products_view(request):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
-    return render(request, 'shop/index.html', {'page_obj': page_obj, 'sort_by': sort_by})
+    return render(request, 'shop/product_list.html', {'page_obj': page_obj, 'sort_by': sort_by})
 
 
 
@@ -35,8 +60,7 @@ def search_view(request):
     sort_by = request.GET.get('sort', 'default')
 
     if query:
-        products = ProductProxy.objects.filter(
-            Q(title__icontains=query))
+        products = ProductProxy.objects.filter(Q(title__icontains=query))
     else:
         products = ProductProxy.objects.all()
 
@@ -51,5 +75,4 @@ def search_view(request):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
-    return render(request, 'shop/search.html', {'page_obj': page_obj, 'query': query, 'sort_by': sort_by})
-
+    return render(request, 'shop/product_list.html', {'page_obj': page_obj, 'query': query, 'sort_by': sort_by})

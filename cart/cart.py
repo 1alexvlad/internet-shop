@@ -14,9 +14,8 @@ class Cart(object):
 
         if not cart:
             cart = self.session['session_key'] = {}
-            
-        self.cart = cart
 
+        self.cart = cart
 
     def __len__(self):
         """
@@ -51,10 +50,10 @@ class Cart(object):
 
         if product_id not in self.cart:
             self.cart[product_id] = {'qty': quantity, 'price': str(product.price)}
-        
+
         self.cart[product_id]['qty'] = quantity
 
-        self.session.modified = True
+        self.session.modified = True    
 
 
     def delete(self, product):

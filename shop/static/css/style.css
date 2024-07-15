@@ -62,7 +62,97 @@ a {
     }
 }
 
-input{
-    color: #7a7a7a"
+input {
+    color: #ffffff"
 }
 
+.col-md-7.col-lg-7.ps-md-3.ps-lg-5 {
+    background-color: rgb(244, 241, 241);
+}
+
+.row g-3{
+    background-color: red;
+}
+  .btn-secondary.btn-sm {
+    background-color: #378ce7; /* Синий цвет фона */
+    color: #fff; /* Белый цвет текста */
+    border-color: #007bff; /* Синий цвет границы */
+  }
+  
+  .btn-secondary.btn-sm:hover {
+    background-color: #0056b3; /* Более темный синий цвет фона при наведении */
+    color: #fff; /* Белый цвет текста при наведении */
+    border-color: #0056b3; /* Более темный синий цвет границы при наведении */
+  }
+
+
+.name {
+    color: rgb(56, 54, 54);
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    font-size: 3rem;
+    text-align: center;
+}
+
+/* .menu {
+    display: grid;
+    grid-template-columns: 1fr 3fr;
+} */
+.menu{
+    /* //Делаем меню родителем для позиционирования */
+    position: relative;  
+}
+
+.categories-list{
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 10;
+    background-color: white;
+    display: none;
+    list-style-type: none;
+    padding: 0 10px;
+
+}
+
+.categories-list.show{
+    display: block;
+}
+
+.catalog-button{
+    padding: 6px 20px;
+    position: relative;
+    z-index: 10;
+    background-color: rgb(25,135,84);
+    color: white;
+    border: none;
+    border-radius: 4px;
+}
+
+.categories-list li a {
+    text-decoration: none;
+  }
+
+.left {
+    grid-column: 1;
+    padding: 20px;
+}
+
+.right {
+    grid-column: 2;
+    padding-top: 100px;
+}
+
+.main {
+    display: flex;
+    grid-template-columns: 1fr 1fr
+}
+
+.leva {
+    grid-column: 1;
+    padding-right: 10px;
+    position: relative;
+}
+
+.prava {
+    grid-column: 1;
+}

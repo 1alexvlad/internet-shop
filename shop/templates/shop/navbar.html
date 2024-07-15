@@ -1,0 +1,40 @@
+{% load static %}
+{% load shop_tags %}
+
+<div class="container">
+    <div class="menu">
+        <div class="left">
+            <div class="main">
+                <div class="leva">
+                    <button id="catalog-button" class="catalog-button">Каталог</button>
+                    <ul id="categories-list" class="categories-list">
+                        {% tag_categories as categories %}
+                        {% for category in categories %}
+
+                        <li><a href="{% url 'shop:catalog' category.slug %}">{{ category.name }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
+                <div class="prava">
+                    <!-- ФИЛЬТРАЦИЯ ПО ЦЕНЕ -->
+                    <div class="col-md-12">
+                        <form action="{% url 'shop:search' %}" method="get" class="d-flex flex-column">
+                            <input type="hidden" name="q" value="{{ query }}">
+                            <select name="sort" id="sort" class="form-control border-success"
+                                onchange="this.form.submit()">
+                                <option value="default" {% if sort_by == 'default' %}selected{% endif %}>По умолчанию </option>
+                                <option value="asc" {% if sort_by == 'asc' %}selected{% endif %}>По возрастанию △</option>
+                                <option value="desc" {% if sort_by == 'desc' %}selected{% endif %}>По убыванию ▽</option>
+
+
+                            </select>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+</div>
