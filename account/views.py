@@ -1,75 +1,131 @@
-from django.contrib import messages
+from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth import get_user_model, authenticate, login, logout
+from django.contrib.auth import get_user_model
+
+from django.contrib.auth.views import LoginView
+from django.views.generic import CreateView, UpdateView, TemplateView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views import View
+
+
+from django.contrib.auth.models import User
 
 # Модели и фунции Аутентификации
 from django.contrib.auth.models import auth
-from django_email_verification import send_email
+from django.urls import reverse, reverse_lazy
+
+from cart.models import Cart
 
 from .forms import UserCreateForm, LoginForm, UserUpdateForm
 
 User = get_user_model()
 
 
-def register_user(request):
+class RegistrationView(CreateView):
+    template_name = 'account/register/register.html'
+    form_class = UserCreateForm
+    success_url = reverse_lazy('shop:products')
+
+    def form_valid(self, form):
+        session_key = self.request.session.session_key
+        user = form.instance    
+
+        if user:
+            form.save()
+            auth.login(self.request, user)
+
+            if session_key:
+                Cart.objects.filter(session_key=session_key).update(user=user)
+
+        return HttpResponseRedirect(self.success_url)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Регистрация'
+        return context  
+
+
+class UserLoginView(LoginView):
+    template_name = 'account/login/login.html'
+    form_class = LoginForm
+    success_url = reverse_lazy('shop:products')
+
+    def get_success_url(self) -> str:
+        redirect_page = self.request.POST.get('next', None)
+        if redirect_page and redirect_page != reverse('user:logout'):
+            return redirect_page
+        return reverse_lazy('shop:products')    
     
-    if request.method == 'POST':
-        form = UserCreateForm(request.POST)
+    def form_valid(self, form):
+        session_key = self.request.session.session_key
 
-        if form.is_valid():
-            form.save(commit=False)
-            user_username = form.cleaned_data.get('username')
-            user_password = form.cleaned_data.get('password1')
+        user = form.get_user()
 
-            # Создаем user
-            user = User.objects.create_user(
-                username = user_username, password=user_password
-            )
+        if user:
+            auth.login(self.request, user)
+            if session_key:
+                # Удаляем старую аунтификацию сессии
+                forgot_carts = Cart.objects.filter(user=user)
+                if forgot_carts.exists():
+                    forgot_carts.delete()
+                # Добавляем новую авторизацию пользователя из анонимной сессии
+                Cart.objects.filter(session_key=session_key).update(user=user)
 
-            user.is_active = False
-
-            send_email(user)
-
-            return redirect('/account/email-verification/')
-            
-    else:
-        form = UserCreateForm()
-
-    return render(request, 'account/register.html', {'form': form})
+                return HttpResponseRedirect(self.get_success_url())
 
 
-def email_verification(request):
-    return render(request, 'account/email/email-verification.html')
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Авторизация'
+        return context   
 
 
-def login_user(request):
+class DashboardUserView(LoginRequiredMixin, TemplateView):
+    template_name = 'account/dashboard/dashboard.html'
+    login_url = 'account:login'
 
-    form = LoginForm()
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Аккаунт'
+        return context
 
-# Если уже залогинин, то перенаправляем на гл.стр
-    if request.user.is_authenticated:
-        return redirect('shop:products')
 
-    if request.method == "POST":
-        form = LoginForm(request.POST)
+class UserProfileView(LoginRequiredMixin, UpdateView):
+    template_name = 'account/dashboard/profile-management.html'
+    form_class = UserUpdateForm
+    success_url = reverse_lazy('shop:products')
 
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-            
-        # Проверяем в бд
-        user = authenticate(request, username=username, password=password)
+    def get_object(self, queryset=None):
+        return self.request.user
+    
+    def form_valid(self, form):
+        return super().form_valid(form)
 
-        if user is not None:
-            auth.login(request, user)
-            return redirect('account:dashboard')
-        else:
-            messages.info(request, 'Username or Password is incorrect')
-            return redirect('account:login')     
-        
-    context = {'form': form}    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Личный кабинет'
+        return context
+    
 
-    return render(request, 'account/login/login.html', context)
+class DeleteUserView(LoginRequiredMixin, View):
+    template_name = 'account/dashboard/account-delete.html'
+    login_url = 'account:login'
+    success_url = reverse_lazy('shop:products')
+
+    def get(self, request, *args, **kwargs):
+        # Отображаем страницу подтверждения удаления
+        context = {
+            "title": "Удаление аккаунта"
+        }
+        return render(request, self.template_name, context)
+
+    def post(self, request, *args, **kwargs):
+        # Удаляем пользователя
+        user = User.objects.get(id=request.user.id)
+        user.delete()
+        return redirect(self.success_url)
+    
 
 
 def logout_user(request):
@@ -80,34 +136,3 @@ def logout_user(request):
         del request.session[key]
     auth.logout(request)
     return redirect('shop:products')
-
-@login_required(login_url='account:login')
-def dashboard_user(request):
-    return render(request, 'account/dashboard/dashboard.html')
-
-
-@login_required(login_url='account:login')
-def profile_user(request):
-
-    if request.method == 'POST':
-        form = UserUpdateForm(request.POST, instance=request.user)
-
-        if form.is_valid():
-            form.save()
-            return redirect('account:dashboard')
-    else:
-        form = UserUpdateForm(instance=request.user)
-
-    context = {'form': form}
-
-    return render(request, 'account/dashboard/profile-management.html', context)
-
-
-@login_required(login_url='account:login')
-def delete_user(request):
-    user = User.objects.get(id=request.user.id)
-    if request.method == "POST":
-        user.delete()
-        return redirect('shop:products')
-    
-    return render(request, 'account/dashboard/account-delete.html')

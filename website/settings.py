@@ -126,8 +126,9 @@ CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 APPEND_SLASH = True
 
-
 # Yookassa
 YOOKASSA_SECRET_KEY = os.environ.get('YOOKASSA_SECRET_KEY')
 YOOKASSA_SHOP_ID = os.environ.get('YOOKASSA_SHOP_ID')
 
+LOGIN_URL = 'account:login'
+LOGIN_REDIRECT_URL = 'shop:products'
