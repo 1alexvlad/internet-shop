@@ -2,11 +2,9 @@ from typing import Any
 from django.db.models.base import Model as Model
 from django.db.models.query import QuerySet
 from django.shortcuts import render, get_object_or_404
-from .models import Category, ProductProxy
+from .models import Product
 
 from django.db.models import Q
-
-# from django.core.paginator import Paginator
 
 from django.views.generic import TemplateView, DetailView, ListView
 
@@ -21,14 +19,15 @@ class ProductView(TemplateView):
 
 
 class CatalogView(ListView):
-    model = ProductProxy
+    model = Product
     template_name = 'shop/product_list.html'
     context_object_name = 'products'
     paginate_by = 4
 
     def get_queryset(self): 
         category_slug = self.kwargs.get('category_slug')
-        products = ProductProxy.objects.all()
+        products = Product.objects.filter(available=True)  # Фильтрация по доступности
+
 
         # Фильтрация по категории
         if category_slug and category_slug != 'all':
@@ -67,7 +66,7 @@ class ProductDetailView(DetailView):
     context_object_name = 'product'
 
     def get_queryset(self):
-        return ProductProxy.objects.all()
+        return Product.objects.all()
 
     def get_object(self, queryset=None):
         # Используем queryset, если он передан, иначе вызываем get_queryset

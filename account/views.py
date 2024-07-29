@@ -1,6 +1,5 @@
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
 
 from django.contrib.auth.views import LoginView
@@ -72,7 +71,7 @@ class UserLoginView(LoginView):
                 # Добавляем новую авторизацию пользователя из анонимной сессии
                 Cart.objects.filter(session_key=session_key).update(user=user)
 
-                return HttpResponseRedirect(self.get_success_url())
+        return HttpResponseRedirect(self.get_success_url())
 
 
     def get_context_data(self, **kwargs):

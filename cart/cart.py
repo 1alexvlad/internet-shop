@@ -1,5 +1,5 @@
 from decimal import Decimal
-from shop.models import ProductProxy
+from shop.models import Product
 
 
 
@@ -30,7 +30,7 @@ class Cart(object):
         """
         product_ids = self.cart.keys()
         # получение объектов product и добавление их в корзину
-        products = ProductProxy.objects.filter(id__in=product_ids)
+        products = Product.objects.filter(id__in=product_ids)
         cart = self.cart.copy()
 
 

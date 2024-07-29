@@ -7,15 +7,11 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import View
 from django.views.generic.base import TemplateView
 
-
-
 from .forms import ShippingAddressForm
 from .models import Order, OrderItem, ShippingAddress
 
 from yookassa import Configuration, Payment
 from cart.cart import Cart
-
-
 
 
 Configuration.account_id = settings.YOOKASSA_SHOP_ID
@@ -55,16 +51,15 @@ class ShippingView(LoginRequiredMixin, View):
         return render(request, self.template_name, context)
 
 
-class CheckoutView(View):
+class CheckoutView(LoginRequiredMixin, View):
     template_name = 'payment/checkout.html'
     login_url = 'account:login'
 
-    def get(self, request):
+    def get(self, request, *args, **kwargs):
         shipping_address = get_object_or_404(ShippingAddress, user=request.user)
         context = {
             'shipping_address': shipping_address
         }
-
         return render(request, self.template_name, context)
 
 
