@@ -24,7 +24,7 @@
                                 <input type="hidden" name="category_slug" value="{{ category_slug }}"> <!-- Передача category_slug -->
                                 <select name="sort" id="sort" class="form-control border-success" onchange="this.form.submit();">
                                     <option value="default" {% if sort_by == 'default' %}selected{% endif %}>По умолчанию</option>
-                                    <option value="asc" {% if sort_by == 'asc' %}selected{% endif %}>По возрастанию 1 △</option>
+                                    <option value="asc" {% if sort_by == 'asc' %}selected{% endif %}>По возрастанию △</option>
                                     <option value="desc" {% if sort_by == 'desc' %}selected{% endif %}>По убыванию ▽</option>
                                 </select>
                             </form>
