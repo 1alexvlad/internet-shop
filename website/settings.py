@@ -36,7 +36,6 @@ INSTALLED_APPS = [
     'mathfilters',
     'crispy_forms',
     "crispy_bootstrap5",
-    'django_email_verification',
     'debug_toolbar',
 ]
 
@@ -83,11 +82,8 @@ DATABASES = {
         'NAME': 'shop-internet',
         'USER': os.environ.get('USER'),
         'PASSWORD': os.environ.get('PASSWORD'),
-        'HOST': 'localhost',
+        'HOST': 'database',
         'PORT': '5432',
-        'OPTIONS': {
-            'connect_timeout': 5,
-        },
     }
 }
 
