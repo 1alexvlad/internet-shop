@@ -18,7 +18,7 @@ class Category(models.Model):
 
 class Product(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='products')
-    title = models.CharField(("Название"), max_length=250, unique=True, blank=False, null=False)
+    title = models.CharField(("Название"), max_length=250, unique=True, blank=False, null=False, db_index=True)
     description = models.TextField(("Описание"), blank=True)
     slug = models.SlugField(("URL"), max_length=250, unique=True, blank=False, null=False)
     price = models.DecimalField(("Цена"), max_digits=7, decimal_places=2, default=99.99)

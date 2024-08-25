@@ -16,6 +16,7 @@ services:
       sh -c "python manage.py runserver 0.0.0.0:8000"
     depends_on:
       - database
+      - redis
   
   database:
     image: postgres:16.4-alpine3.20
@@ -23,27 +24,7 @@ services:
       - POSTGRES_DB=shop-internet
       - POSTGRES_USER=${USER}   
       - POSTGRES_PASSWORD=${PASSWORD}
-
-
-# version: "3.9"
-
-# services:
-#   db: 
-#     image: postgres
-#     volumes: 
-#       - ./data/db:/var/lib/postgresql/data
-#     environment:
-#       - POSTGRES_DB=shop-internet
-#       - POSTGRES_USER=${USER}
-#       - POSTGRES_PASSWORD=${PASSWORD}
-
-#   web:
-#     build: .
-#     command: python manage.py runserver 0.0.0.0:8000
-#     volumes:
-#       - .:/code
-#       - ./data/db:/var/lib/postgresql/dat
-#     ports:
-#       - "8000:8000"
-#     depends_on:
-#       - db
+  
+  redis:
+    image: redis:7.0.5-alpine
+    hostname: redis
