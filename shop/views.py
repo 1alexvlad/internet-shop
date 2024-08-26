@@ -57,6 +57,7 @@ class CatalogView(ListView):
         context['sort_by'] = self.request.GET.get('sort', 'default')
         context['query'] = self.request.GET.get('q', '')
         context['category_slug'] = self.kwargs.get('category_slug')
+        context['show_sort_form'] = True
         return context
 
 

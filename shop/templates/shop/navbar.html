@@ -18,13 +18,15 @@
                     </ul>
                 </div>
 
+                <!-- Проверяем, нужно ли отображать блок -->
+                {% if show_sort_form %}
                 <div class="prava">
                     <div class="col-md-12">
-                        {% if category_slug %}  <!-- Проверяем, находимся ли мы в категории -->
+                        {% if category_slug %}  
                             <!-- Форма сортировки для категории -->
                             <form action="{% url 'shop:catalog' category_slug=category_slug %}" method="get" class="d-flex flex-column">
                                 <input type="hidden" name="q" value="{{ query }}"> 
-                                <input type="hidden" name="category_slug" value="{{ category_slug }}"> <!-- Передача category_slug -->
+                                <input type="hidden" name="category_slug" value="{{ category_slug }}"> 
                                 <select name="sort" id="sort" class="form-control border-success" onchange="this.form.submit();">
                                     <option value="default" {% if sort_by == 'default' %}selected{% endif %}>По умолчанию</option>
                                     <option value="asc" {% if sort_by == 'asc' %}selected{% endif %}>По возрастанию △</option>
@@ -34,8 +36,8 @@
                         {% else %}
                             <!-- Форма для поиска -->
                             <form action="{% url 'shop:search' %}" method="get" class="d-flex flex-column">
-                                <input type="hidden" name="category_slug" value="{{ category_slug }}"> <!-- Передача category_slug -->
-                                <input type="hidden" name="q" value="{{ query }}"> <!-- Передача поискового запроса -->
+                                <input type="hidden" name="category_slug" value="{{ category_slug }}">
+                                <input type="hidden" name="q" value="{{ query }}"> 
                                 <select name="sort" id="sort" class="form-control border-success" onchange="this.form.submit();">
                                     <option value="default" {% if sort_by == 'default' %}selected{% endif %}>По умолчанию</option>
                                     <option value="asc" {% if sort_by == 'asc' %}selected{% endif %}>По возрастанию △</option>
@@ -46,6 +48,7 @@
                     </div>
                 </div>
             </div>
+            {% endif %}
         </div>
     </div>
 </div>
