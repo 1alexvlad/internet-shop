@@ -31,12 +31,14 @@ INSTALLED_APPS = [
     'cart.apps.CartConfig',
     'account.apps.AccountConfig',
     'payment.apps.PaymentConfig',
+    'api.apps.ApiConfig',
 
     # сторонние библиотеки
     'mathfilters',
     'crispy_forms',
     "crispy_bootstrap5",
     'debug_toolbar',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [

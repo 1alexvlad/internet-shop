@@ -24,6 +24,8 @@ services:
       - POSTGRES_DB=shop-internet
       - POSTGRES_USER=${USER}   
       - POSTGRES_PASSWORD=${PASSWORD}
+    volumes:
+      - ./db_dump.sql:/docker-entrypoint-initdb.d/db_dump.sql
   
   redis:
     image: redis:7.0.5-alpine
