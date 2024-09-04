@@ -7,6 +7,8 @@ from django.views.generic import CreateView, UpdateView, TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import View
 
+from .tasks import send_spam_email
+
 
 from django.contrib.auth.models import User
 
@@ -32,6 +34,7 @@ class RegistrationView(CreateView):
 
         if user:
             form.save()
+            send_spam_email.delay(form.instance.email)
             auth.login(self.request, user)
 
             if session_key:

@@ -30,3 +30,15 @@ services:
   redis:
     image: redis:7.0.5-alpine
     hostname: redis
+
+  worker-1:
+    build:
+      context: .
+    volumes:
+      - .:/code
+    command: >
+      sh -c "celery -A website.celery worker --loglevel=info"
+    depends_on:
+      - redis
+      - database
+
