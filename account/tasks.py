@@ -4,5 +4,5 @@ from .service import send
 
 
 @app.task
-def send_spam_email(user_email):
+def send_email(user_email):
     send(user_email)

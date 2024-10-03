@@ -6,11 +6,12 @@ from django.urls import reverse
 class Category(models.Model):
     name = models.CharField('Категория', max_length=250, unique=True, blank=False, null=False)
     slug = models.SlugField('URL', max_length=250, unique=True, blank=False, null=False)
-    created = models.DateTimeField('Дата создания', auto_now_add=True)
+    sort_order = models.PositiveIntegerField('Порядок сортировки', default=0)
 
     class Meta:
         verbose_name = 'Категория'
         verbose_name_plural = 'Категории'
+        ordering = ['sort_order']
 
     def __str__(self):
         return self.name
@@ -24,9 +25,8 @@ class Product(models.Model):
     price = models.DecimalField(("Цена"), max_digits=7, decimal_places=2, default=99.99)
     image = models.ImageField(("Изображение"), upload_to='products/products/%Y/%m/%d', default='products/products/default/image.png')
     available = models.BooleanField(("Наличие"), default=True)
-    created_at = models.DateTimeField('Дата создания', auto_now_add=True)
-    updated_at = models.DateTimeField('Дата изменения', auto_now=True)
-
+    
+    
     class Meta:
         indexes = [
             models.Index(fields=['price']),

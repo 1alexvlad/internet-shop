@@ -9,7 +9,7 @@ services:
       - .:/code
     environment:
       - DB_HOST=database
-      - DB_NAME=shop-internet
+      - DB_NAME=django
       - DB_USER=${USER}
       - DB_PASS=${PASSWORD}
     command: >
@@ -17,15 +17,16 @@ services:
     depends_on:
       - database
       - redis
+
   
   database:
     image: postgres:16.4-alpine3.20
     environment:
-      - POSTGRES_DB=shop-internet
+      - POSTGRES_DB=django
       - POSTGRES_USER=${USER}   
       - POSTGRES_PASSWORD=${PASSWORD}
     volumes:
-      - ./db_dump.sql:/docker-entrypoint-initdb.d/db_dump.sql
+      - ./dump_file.sql:/docker-entrypoint-initdb.d/dump_file.sql
   
   redis:
     image: redis:7.0.5-alpine

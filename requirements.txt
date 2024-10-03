@@ -1,6 +1,6 @@
 Django==4.2.9
 psycopg2==2.9.9
-django-redis==5.2.0 
+django-redis==5.4.0 
 celery==5.2.6
 redis==4.0.2
 flower==2.0.1

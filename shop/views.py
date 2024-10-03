@@ -70,7 +70,6 @@ class ProductDetailView(DetailView):
         return Product.objects.all()
 
     def get_object(self, queryset=None):
-        # Используем queryset, если он передан, иначе вызываем get_queryset
         if queryset is None:
             queryset = self.get_queryset()
         return get_object_or_404(queryset, slug=self.kwargs.get(self.slug_url_kwarg))
