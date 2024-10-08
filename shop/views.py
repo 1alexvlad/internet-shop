@@ -1,12 +1,8 @@
-from typing import Any
-from django.db.models.base import Model as Model
-from django.db.models.query import QuerySet
-from django.shortcuts import render, get_object_or_404
-from .models import Product
-
 from django.db.models import Q
+from django.shortcuts import get_object_or_404
+from django.views.generic import DetailView, ListView, TemplateView
 
-from django.views.generic import TemplateView, DetailView, ListView
+from .models import Product
 
 
 class ProductView(TemplateView):
@@ -26,21 +22,18 @@ class CatalogView(ListView):
 
     def get_queryset(self): 
         category_slug = self.kwargs.get('category_slug')
-        products = Product.objects.filter(available=True)  # Фильтрация по доступности
+        products = Product.objects.filter(available=True)
 
 
-        # Фильтрация по категории
         if category_slug and category_slug != 'all':
             products = products.filter(category__slug=category_slug)
 
-        # Фильтрация по поисковому запросу
         query = self.request.GET.get('q')
         if query:
             products = products.filter(
                 Q(title__icontains=query) | Q(description__icontains=query)
             )
 
-        # Сортировка
         sort_by = self.request.GET.get('sort', 'default')
         if sort_by == 'asc':
             products = products.order_by('price')
@@ -74,7 +67,7 @@ class ProductDetailView(DetailView):
             queryset = self.get_queryset()
         return get_object_or_404(queryset, slug=self.kwargs.get(self.slug_url_kwarg))
 
-    def get_context_data(self, **kwargs: Any):
+    def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["title"] = self.object.title
         return context

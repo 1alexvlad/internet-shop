@@ -2,7 +2,6 @@ from django.db import models
 from django.urls import reverse
 
 
-
 class Category(models.Model):
     name = models.CharField('Категория', max_length=250, unique=True, blank=False, null=False)
     slug = models.SlugField('URL', max_length=250, unique=True, blank=False, null=False)

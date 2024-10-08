@@ -1,24 +1,17 @@
-from django.http import HttpResponseRedirect
-from django.shortcuts import render, redirect
 from django.contrib.auth import get_user_model
-
-from django.contrib.auth.views import LoginView
-from django.views.generic import CreateView, UpdateView, TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views import View
-
-from .tasks import send_email
-
-
-from django.contrib.auth.models import User
-
-# Модели и фунции Аутентификации
-from django.contrib.auth.models import auth
+from django.contrib.auth.models import User, auth
+from django.contrib.auth.views import LoginView
+from django.http import HttpResponseRedirect
+from django.shortcuts import redirect, render
 from django.urls import reverse, reverse_lazy
+from django.views import View
+from django.views.generic import CreateView, TemplateView, UpdateView
 
 from cart.models import Cart
 
-from .forms import UserCreateForm, LoginForm, UserUpdateForm
+from .forms import LoginForm, UserCreateForm, UserUpdateForm
+from .tasks import send_email
 
 User = get_user_model()
 
@@ -67,11 +60,9 @@ class UserLoginView(LoginView):
         if user:
             auth.login(self.request, user)
             if session_key:
-                # Удаляем старую аунтификацию сессии
                 forgot_carts = Cart.objects.filter(user=user)
                 if forgot_carts.exists():
                     forgot_carts.delete()
-                # Добавляем новую авторизацию пользователя из анонимной сессии
                 Cart.objects.filter(session_key=session_key).update(user=user)
 
         return HttpResponseRedirect(self.get_success_url())
@@ -116,14 +107,12 @@ class DeleteUserView(LoginRequiredMixin, View):
     success_url = reverse_lazy('shop:products')
 
     def get(self, request, *args, **kwargs):
-        # Отображаем страницу подтверждения удаления
         context = {
             "title": "Удаление аккаунта"
         }
         return render(request, self.template_name, context)
 
     def post(self, request, *args, **kwargs):
-        # Удаляем пользователя
         user = User.objects.get(id=request.user.id)
         user.delete()
         return redirect(self.success_url)

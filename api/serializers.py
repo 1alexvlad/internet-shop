@@ -1,8 +1,8 @@
+from django.contrib.auth.models import User
 from rest_framework import serializers
 
 from shop.models import Category, Product
 
-from django.contrib.auth.models import User
 
 class ProductSerializer(serializers.ModelSerializer):
     category = serializers.SlugRelatedField(slug_field='name', queryset=Category.objects.all())

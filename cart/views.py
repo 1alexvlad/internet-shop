@@ -1,11 +1,11 @@
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render
+from django.views import View
 
 from shop.models import Product
+
 from .cart import Cart
 from .models import PromoCode
-
-from django.views import View
 
 
 class CartView(View):
@@ -17,13 +17,11 @@ class CartView(View):
         discount = 0
         error_message = ''
 
-        # Проверяем, есть ли введенный промокод
         if promo_code:
             try:
                 promo = PromoCode.objects.get(code=promo_code, is_active=True)
                 discount = promo.discount_percent
             except PromoCode.DoesNotExist:
-                # Промокод не найден или неактивен
                 error_message = 'Промокод недействителен.'
 
         total_price = cart.get_total_price()

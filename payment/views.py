@@ -1,18 +1,17 @@
-from django.conf import settings
 import uuid
+
+from django.conf import settings
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
-
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import View
 from django.views.generic.base import TemplateView
+from yookassa import Configuration, Payment
+
+from cart.cart import Cart
 
 from .forms import ShippingAddressForm
 from .models import Order, OrderItem, ShippingAddress
-
-from yookassa import Configuration, Payment
-from cart.cart import Cart
-
 
 Configuration.account_id = settings.YOOKASSA_SHOP_ID
 Configuration.secret_key = settings.YOOKASSA_SECRET_KEY
@@ -23,7 +22,6 @@ class ShippingView(LoginRequiredMixin, View):
     login_url = 'account:login'
 
     def get(self, request, *args, **kwargs):
-        # Получаем адрес доставки пользователя или создаем новый
         shipping_address = ShippingAddress.objects.filter(user=request.user).first()
         form = ShippingAddressForm(instance=shipping_address)
         
@@ -34,7 +32,6 @@ class ShippingView(LoginRequiredMixin, View):
         return render(request, self.template_name, context)
 
     def post(self, request, *args, **kwargs):
-        # Обрабатываем форму при отправке POST-запроса
         shipping_address = ShippingAddress.objects.filter(user=request.user).first()
         form = ShippingAddressForm(request.POST, instance=shipping_address)
         
@@ -42,7 +39,7 @@ class ShippingView(LoginRequiredMixin, View):
             shipping_address = form.save(commit=False)
             shipping_address.user = request.user
             shipping_address.save()
-            return redirect('account:dashboard')  # Перенаправление после успешного сохранения
+            return redirect('account:dashboard') 
 
         context = {
             'form': form,
@@ -65,18 +62,15 @@ class CheckoutView(LoginRequiredMixin, View):
 
 class CompleteOrderView(View):
     def post(self, request, *args, **kwargs):
-        # Получаем данные из POST-запроса
         payment_type = request.POST.get('yookassa-payment')
         name = request.POST.get('name')
         email = request.POST.get('email')
         street_address = request.POST.get('street_address')
         apartment_address = request.POST.get('apartment_address')
 
-        # Получаем корзину и общую сумму заказа
         cart = Cart(request)
         total_price = cart.get_total_price()
 
-        # Обработка платежа через YooKassa
         if payment_type == "yookassa-payment":
             idempotence_key = uuid.uuid4()
             currency = 'RUB'
@@ -95,7 +89,6 @@ class CompleteOrderView(View):
                 "description": description,
             }, idempotence_key)
 
-            # Создание или получение адреса доставки
             shipping_address, _ = ShippingAddress.objects.get_or_create(
                 user=request.user,
                 defaults={
@@ -108,7 +101,6 @@ class CompleteOrderView(View):
 
             confirmation_url = payment.confirmation.confirmation_url
 
-            # Создание заказа
             if request.user.is_authenticated:
                 order = Order.objects.create(
                     user=request.user, shipping_address=shipping_address, amount=total_price)
@@ -117,7 +109,6 @@ class CompleteOrderView(View):
                     OrderItem.objects.create(
                         order=order, product=item['product'], price=item['price'], quantity=item['qty'], user=request.user)
 
-                # Очищаем корзину и перенаправляем на URL подтверждения платежа
                 cart.clear()
                 return redirect(confirmation_url)
 
@@ -129,7 +120,6 @@ class CompleteOrderView(View):
                     OrderItem.objects.create(
                         order=order, product=item['product'], price=item['price'], quantity=item['qty'])
 
-                # Очищаем корзину и перенаправляем на URL подтверждения платежа
                 cart.clear()
                 return redirect(confirmation_url)
         

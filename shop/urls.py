@@ -1,4 +1,5 @@
 from django.urls import path
+
 from .views import ProductView, ProductDetailView, CatalogView
 
 app_name = 'shop'

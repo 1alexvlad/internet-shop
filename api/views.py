@@ -1,10 +1,10 @@
-from . import serializers
+from django.contrib.auth.models import User
 from rest_framework import generics
 from rest_framework.pagination import PageNumberPagination
 
 from shop.models import Product
-from django.contrib.auth.models import User
 
+from . import serializers
 
 
 class ProductPagination(PageNumberPagination):
