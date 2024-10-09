@@ -1,10 +1,10 @@
 from django.contrib.auth.models import User
-from rest_framework import generics
+from rest_framework import generics, viewsets
 from rest_framework.pagination import PageNumberPagination
 
 from shop.models import Product
 
-from . import serializers
+from .serializers import ProductSerializer, UserSerializer
 
 
 class ProductPagination(PageNumberPagination):
@@ -13,22 +13,17 @@ class ProductPagination(PageNumberPagination):
     max_page_size = 1000
 
 
-
 class ProductList(generics.ListAPIView):
     queryset = Product.objects.all()
-    serializer_class = serializers.ProductSerializer
+    serializer_class = ProductSerializer
     pagination_class = ProductPagination
     
-
 class ProductDetail(generics.RetrieveAPIView):
     queryset = Product.objects.all()
-    serializer_class = serializers.ProductSerializer
+    serializer_class = ProductSerializer
 
 
-class UserList(generics.ListAPIView):
+
+class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
-    serializer_class = serializers.UserSerializer
-
-class UserDetail(generics.RetrieveAPIView):
-    queryset = User.objects.all()
-    serializer_class = serializers.UserSerializer
+    serializer_class = UserSerializer
