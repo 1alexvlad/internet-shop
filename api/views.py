@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
-from rest_framework import generics, viewsets
+from rest_framework import generics
 from rest_framework.pagination import PageNumberPagination
+from rest_framework.permissions import IsAuthenticated, BasePermission
 
 from shop.models import Product
 
@@ -23,7 +24,17 @@ class ProductDetail(generics.RetrieveAPIView):
     serializer_class = ProductSerializer
 
 
+class IsOwnerOrReadOnly(BasePermission):
+    def has_object_permission(self, request, view, obj):
+        if request.method in ['GET']:
+            return True
+        return obj == request.user
 
-class UserViewSet(viewsets.ModelViewSet):
+class UserList(generics.ListAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+
+class UserDetail(generics.RetrieveUpdateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = (IsAuthenticated, IsOwnerOrReadOnly)
