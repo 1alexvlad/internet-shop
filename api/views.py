@@ -15,7 +15,7 @@ class ProductPagination(PageNumberPagination):
 
 
 class ProductList(generics.ListAPIView):
-    queryset = Product.objects.all()
+    queryset = Product.objects.select_related('category').all()
     serializer_class = ProductSerializer
     pagination_class = ProductPagination
     

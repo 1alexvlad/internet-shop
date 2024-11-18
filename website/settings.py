@@ -26,6 +26,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'cachalot',
+
     # apps
     'shop.apps.ShopConfig',
     'cart.apps.CartConfig',
