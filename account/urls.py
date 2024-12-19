@@ -13,4 +13,10 @@ urlpatterns = [
     path('dashboard/', views.DashboardUserView.as_view(), name='dashboard'),
     path('profile-management/', views.UserProfileView.as_view(), name='profile-management'),
     path('delete-user/', views.DeleteUserView.as_view(), name='delete-user'),
+
+    path('confirm/<uidb64>/<token>/', views.confirm_account, name='confirm_account'),
+
+    path('password-change/', views.password_change, name='password_change'),
+    path('reset/<uidb64>/<token>/', views.password_reset_confirm, name='password_reset_confirm'),
+
 ]

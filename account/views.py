@@ -2,16 +2,24 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User, auth
 from django.contrib.auth.views import LoginView
+from django.contrib.auth import update_session_auth_hash
 from django.http import HttpResponseRedirect
 from django.shortcuts import redirect, render
 from django.urls import reverse, reverse_lazy
+from django.utils.encoding import force_str
 from django.views import View
 from django.views.generic import CreateView, TemplateView, UpdateView
+from django.utils.http import urlsafe_base64_decode
+from django.contrib import messages
+
 
 from cart.models import Cart
 
 from .forms import LoginForm, UserCreateForm, UserUpdateForm
-from .tasks import send_email
+from .tasks import send_registration_email, send_password_reset_email_task
+from .service import send_confirmation_email, send_password_reset_email
+from .tokens import account_activation_token
+
 
 User = get_user_model()
 
@@ -23,14 +31,19 @@ class RegistrationView(CreateView):
 
     def form_valid(self, form):
         session_key = self.request.session.session_key
-        user = form.instance    
+        user = form.save(commit=False)
+        user.is_active = False
+        user.save()
+        
+        auth.login(self.request, user)
 
-        if user:
-            form.save()
-            send_email.delay(form.instance.email)
-            auth.login(self.request, user)
+        messages.success(self.request, 'Письмо для подтверждения аккаунта было отправлено на указанную почту.')
+        
+        confirmation_link = send_confirmation_email(user)
+        send_registration_email.delay(user.email, confirmation_link)
+        
 
-            if session_key:
+        if session_key:
                 Cart.objects.filter(session_key=session_key).update(user=user)
 
         return HttpResponseRedirect(self.success_url)
@@ -127,3 +140,59 @@ def logout_user(request):
         del request.session[key]
     auth.logout(request)
     return redirect('shop:products')
+
+
+def confirm_account(request, uidb64, token):
+    try:
+        uid = urlsafe_base64_decode(uidb64).decode()
+        user = User.objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+ 
+    context = {
+        'title': 'Ошибка подтверждения'
+    }
+    if user is not None and account_activation_token.check_token(user, token):
+        user.is_active = True
+        user.save()
+        return redirect('shop:products')
+    else:
+        return render(request, 'account/register/confirmation_invalid.html', context)
+    
+
+def password_change(request):
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        try:
+            user = User.objects.get(email=email)
+            send_password_reset_email_task.delay(user.email, user.id)          
+            messages.success(request, "Ссылка для сброса пароля была отправлена на ваш email.")
+        except User.DoesNotExist:
+            messages.error(request, 'Пользователь с таким email не найден')
+
+    return render(request, 'account/login/password_change.html')
+
+
+def password_reset_confirm(request, uidb64, token):
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+
+    if request.method == "POST":
+        new_password = request.POST.get("new_password")
+        confirm_password = request.POST.get("confirm_password")
+
+        if new_password == confirm_password:
+            user.set_password(new_password)
+            user.save()
+
+            update_session_auth_hash(request, user)
+
+            messages.success(request, "Пароль успешно сменен.")
+            return redirect('shop:products')
+        else:
+            messages.error(request, "Пароли не совпадают.")
+
+    return render(request, 'account/login/password_reset_confirm.html', {'token': token, 'uidb64': uidb64})

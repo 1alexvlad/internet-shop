@@ -70,8 +70,6 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
 
-                # Custom Context Processors
-                # 'shop.context_processors.categories',
                 'cart.context_processors.cart',
             ],
         },
@@ -107,20 +105,6 @@ REST_FRAMEWORK = {
        ],
     
 }
-
-
-# LOGGING = {
-#     'version': 1,
-#     'handlers': {
-#         'console': {'class': 'logging.StreamHandler'}
-#     },
-#     'loggers': {
-#         'django.db.backends': {
-#             'handlers': ['console'],
-#             'level': 'DEBUG'
-#         }
-#     }
-# }
 
 
 CACHES = {
@@ -186,11 +170,10 @@ LOGIN_REDIRECT_URL = 'shop:products'
 
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_HOST_USER = 'cinematv2121@gmail.com'
-EMAIL_HOST_PASSWORD = 'fcav aqsf yorj cdma'
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 EMAIL_PORT = 587
 
 
