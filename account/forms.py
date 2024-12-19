@@ -36,3 +36,19 @@ class UserUpdateForm(forms.ModelForm):
         model = User
         fields = ['username']
 
+
+class PasswordResetForm(forms.Form):
+    new_password = forms.CharField(widget=forms.PasswordInput(), label="Новый пароль")
+    confirm_password = forms.CharField(widget=forms.PasswordInput(), label="Подтверждение пароля")
+
+    def clean(self):
+        cleaned_data = super().clean()
+        new_password = cleaned_data.get('new_password')
+        confirm_password = cleaned_data.get('confirm_password')
+        
+        if new_password and confirm_password and new_password != confirm_password:
+            raise forms.ValidationError('Пароли не совпадают.')
+        
+        
+class EmailChangeForm(forms.Form):
+    email = forms.CharField(label='email', max_length=254, required=True)

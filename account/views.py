@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User, auth
-from django.contrib.auth.views import LoginView
+from django.contrib.auth.views import LoginView, PasswordResetConfirmView, PasswordResetDoneView
 from django.contrib.auth import update_session_auth_hash
 from django.http import HttpResponseRedirect
 from django.shortcuts import redirect, render
@@ -15,7 +15,7 @@ from django.contrib import messages
 
 from cart.models import Cart
 
-from .forms import LoginForm, UserCreateForm, UserUpdateForm
+from .forms import LoginForm, UserCreateForm, UserUpdateForm, PasswordResetForm, EmailChangeForm
 from .tasks import send_registration_email, send_password_reset_email_task
 from .service import send_confirmation_email, send_password_reset_email
 from .tokens import account_activation_token
@@ -142,57 +142,76 @@ def logout_user(request):
     return redirect('shop:products')
 
 
-def confirm_account(request, uidb64, token):
-    try:
-        uid = urlsafe_base64_decode(uidb64).decode()
-        user = User.objects.get(pk=uid)
-    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
-        user = None
- 
-    context = {
-        'title': 'Ошибка подтверждения'
-    }
-    if user is not None and account_activation_token.check_token(user, token):
-        user.is_active = True
-        user.save()
-        return redirect('shop:products')
-    else:
-        return render(request, 'account/register/confirmation_invalid.html', context)
+class ConfirmAccountView(View):
+    template_name = 'account/register/confirmation_invalid.html'
+
+    def get(self, request, uidb64, token):
+        try:
+            uid = urlsafe_base64_decode(uidb64).decode()
+            user = User.objects.get(pk=uid)
+        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+            user = None
+
+        if user is not None and account_activation_token.check_token(user, token):
+            user.is_active = True
+            user.save()
+            return redirect('shop:products')
+        else:
+            context = {
+                'title': 'Ошибка подтверждения'
+            }
+            return render(request, self.template_name, context)
+
     
 
-def password_change(request):
-    if request.method == 'POST':
-        email = request.POST.get('email')
+class PasswordChangeView(View):
+    template_name = 'account/login/password_change.html'
+    form_class = 'EmailChangeForm'
+
+
+    def get(self, request):
+        form = self.form_class()
+        return render(request, self.template_name, {'form': form})
+
+    def post(self, request):
+        form = self.form_class(request.POST)
+        if form.is_valid():
+            email = form.cleaned_data['email']
+            try:
+                user = User.objects.get(email=email)
+                send_password_reset_email_task.delay(user.email, user.id)          
+                messages.success(request, "Ссылка для сброса пароля была отправлена на ваш email.")
+            except User.DoesNotExist:
+                messages.error(request, 'Пользователь с таким email не найден')
+        else:
+            messages.error(request, "Пожалуйста, введите корректный адрес электронной почты.")
+
+        return render(request, self.template_name, {'form': form})
+
+
+
+class CustomPasswordResetConfirmView(PasswordResetConfirmView):
+    template_name = 'account/login/password_reset_confirm.html'
+    form_class = PasswordResetForm
+
+    def post(self, request, uidb64, token):
+
         try:
-            user = User.objects.get(email=email)
-            send_password_reset_email_task.delay(user.email, user.id)          
-            messages.success(request, "Ссылка для сброса пароля была отправлена на ваш email.")
-        except User.DoesNotExist:
-            messages.error(request, 'Пользователь с таким email не найден')
+            uid = force_str(urlsafe_base64_decode(uidb64))
+            user = User.objects.get(pk=uid)
+        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+            messages.error(request, "Пользователь не найден.")
+            user = self.form_invalid(None)        
 
-    return render(request, 'account/login/password_change.html')
-
-
-def password_reset_confirm(request, uidb64, token):
-    try:
-        uid = force_str(urlsafe_base64_decode(uidb64))
-        user = User.objects.get(pk=uid)
-    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
-        user = None
-
-    if request.method == "POST":
-        new_password = request.POST.get("new_password")
-        confirm_password = request.POST.get("confirm_password")
-
-        if new_password == confirm_password:
+        form = self.get_form()
+        if form.is_valid():
+            new_password = form.cleaned_data['new_password']
             user.set_password(new_password)
             user.save()
-
             update_session_auth_hash(request, user)
-
             messages.success(request, "Пароль успешно сменен.")
             return redirect('shop:products')
         else:
             messages.error(request, "Пароли не совпадают.")
-
-    return render(request, 'account/login/password_reset_confirm.html', {'token': token, 'uidb64': uidb64})
+        
+        return self.form_invalid(form)
