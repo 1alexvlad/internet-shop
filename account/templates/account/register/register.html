@@ -23,6 +23,16 @@
             {{ form|crispy }}
             <input type="submit" value="Register" class="btn btn-secondary w-100 btn-block p-2 btn-register">
         </form>
+        <br>
+        {% load socialaccount %}
+
+        <div class="text-center">
+            <a href="{% provider_login_url 'google' %}?next={% url 'shop:products' %}" class="btn btn-outline-danger w-100 mb-2">
+                Login with Google
+            </a>
+        </div>
     </div>
+
+    
 
 {% endblock %}
