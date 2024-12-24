@@ -1,3 +1,4 @@
+{% load i18n %}
 {% load static %}
 {% load cache %}
 {% load shop_tags %}
@@ -7,7 +8,7 @@
         <div class="left">
             <div class="main">
                 <div class="leva">
-                    <button id="catalog-button" class="catalog-button">Каталог</button>
+                    <button id="catalog-button" class="catalog-button">{% trans "Каталог" %}</button>
                     <ul id="categories-list" class="categories-list">
                         {% cache 60 catalog_categories %}
                         {% tag_categories as categories %}
@@ -28,9 +29,9 @@
                                 <input type="hidden" name="q" value="{{ query }}"> 
                                 <input type="hidden" name="category_slug" value="{{ category_slug }}"> 
                                 <select name="sort" id="sort" class="form-control border-success" onchange="this.form.submit();">
-                                    <option value="default" {% if sort_by == 'default' %}selected{% endif %}>По умолчанию</option>
-                                    <option value="asc" {% if sort_by == 'asc' %}selected{% endif %}>По возрастанию △</option>
-                                    <option value="desc" {% if sort_by == 'desc' %}selected{% endif %}>По убыванию ▽</option>
+                                    <option value="default" {% if sort_by == 'default' %}selected{% endif %}>{% trans "По умолчанию" %}</option>
+                                    <option value="asc" {% if sort_by == 'asc' %}selected{% endif %}>{% trans "По возрастанию" %} △</option>
+                                    <option value="desc" {% if sort_by == 'desc' %}selected{% endif %}>{% trans "По убыванию" %} ▽</option>
                                 </select>
                             </form>
                         {% else %}
@@ -39,9 +40,9 @@
                                 <input type="hidden" name="category_slug" value="{{ category_slug }}">
                                 <input type="hidden" name="q" value="{{ query }}"> 
                                 <select name="sort" id="sort" class="form-control border-success" onchange="this.form.submit();">
-                                    <option value="default" {% if sort_by == 'default' %}selected{% endif %}>По умолчанию</option>
-                                    <option value="asc" {% if sort_by == 'asc' %}selected{% endif %}>По возрастанию △</option>
-                                    <option value="desc" {% if sort_by == 'desc' %}selected{% endif %}>По убыванию ▽</option>
+                                    <option value="default" {% if sort_by == 'default' %}selected{% endif %}>{% trans "По умолчанию" %}</option>
+                                    <option value="asc" {% if sort_by == 'asc' %}selected{% endif %}>{% trans "По возрастанию" %} △</option>
+                                    <option value="desc" {% if sort_by == 'desc' %}selected{% endif %}>{% trans "По убыванию" %} ▽</option>
                                 </select>
                             </form>
                         {% endif %}

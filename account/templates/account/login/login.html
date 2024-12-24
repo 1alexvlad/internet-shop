@@ -1,5 +1,5 @@
 {% include "base.html" %}
-
+{% load i18n %}
 {% load static %}
 
 {% load crispy_forms_tags %}
@@ -31,7 +31,7 @@
         <a href="{% provider_login_url 'google' %}?next={% url 'shop:products' %}" class="btn btn-outline-danger w-100 mb-2">
             Login with Google
         </a>
-        <a href="{% url 'account:password_change' %}" class="text-muted">Забыли пароль?</a>
+        <a href="{% url 'account:password_change' %}" class="text-muted">{% trans "Забыли пароль?" %}</a>
     </div>
 
     <br>

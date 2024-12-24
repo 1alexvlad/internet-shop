@@ -1,6 +1,7 @@
 import os
 from datetime import timedelta
 from pathlib import Path
+from django.utils.translation import gettext_lazy as _
 
 from dotenv import load_dotenv
 
@@ -49,6 +50,7 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
+    'rosetta',
 ]
 
 SOCIALACCOUNT_PROVIDERS = {
@@ -67,6 +69,7 @@ SOCIALACCOUNT_PROVIDERS = {
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -157,6 +160,15 @@ INTERNAL_IPS = [
 ]
 
 LANGUAGE_CODE = 'ru-ru'
+
+LANGUAGES = [
+    ('ru', _('Russia')),
+    ('en', _('English'))
+]
+
+LOCALE_PATHS = [
+    BASE_DIR / 'locale',
+]
 
 TIME_ZONE = 'Europe/Moscow'
 

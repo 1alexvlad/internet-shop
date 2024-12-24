@@ -1,4 +1,5 @@
 {% include "base.html" %}
+{% load i18n %}
 {% load static %}
 
 <title>{{ title }}</title>
@@ -17,8 +18,8 @@
     <div class="container bg-white shadow-md p-5" style="width:500px; border-radius:20px;">
         <form id="form" action="{% url 'payment:complete-order' %}" method="post">
             <div>
-                <h3>Завершите свой заказ </h3>
-                <p> Пожалуйста, введите соответствующую информацию ниже. </p>
+                <h3>{% trans "Завершите свой заказ" %}</h3>
+                <p>{% trans "Пожалуйста, введите соответствующую информацию ниже." %}</p>
                 
                 <div class="form-field">
                     <input class="form-control validate" id="name" type="text" placeholder="Full name*"

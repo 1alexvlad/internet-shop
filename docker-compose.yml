@@ -25,9 +25,6 @@ services:
       - POSTGRES_DB=django
       - POSTGRES_USER=${USER}   
       - POSTGRES_PASSWORD=${PASSWORD}
-    volumes:
-      - ./dump_file.sql:/docker-entrypoint-initdb.d/dump_file.sql
-  
   redis:
     image: redis:7.0.5-alpine
     hostname: redis

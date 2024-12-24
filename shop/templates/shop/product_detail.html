@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+{% load i18n %}
 {% load static %}
 
 {% block title %}
@@ -26,7 +26,7 @@
           <div class="border">
             <div class="col border-bottom">
               <div class="row p-3">
-                <div class="col-6"><strong>Цена</strong></div>
+                <div class="col-6"><strong>{% trans "Цена" %}</strong></div>
                 <div class="col-6 text-end">
                   <span class="h4 fw-bold">{{ product.price }} ₽</span>
                 </div>
@@ -36,7 +36,7 @@
             <div class="col">
               <div class="row p-3">
                 <div class="col-6">
-                  <label for="select"><strong>Количество</strong></label>
+                  <label for="select"><strong>{% trans "Количество" %}</strong></label>
                   &nbsp;<select id="select">
                     <option value="1">1</option>
                     <option value="2">2</option>
@@ -47,7 +47,7 @@
                 </div>
 
                 <div class="col-6 text-end">
-                  <button type="button" id="add-button" value="{{ product.id }}" class="btn btn-secondary btn-sm">Добавить в корзину</button>
+                  <button type="button" id="add-button" value="{{ product.id }}" class="btn btn-secondary btn-sm">{% trans "Добавить в корзину" %}</button>
                 </div>
               </div>
             </div>
