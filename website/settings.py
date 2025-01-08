@@ -19,7 +19,7 @@ ALLOWED_HOSTS = ["127.0.0.1", "localhost", "0.0.0.0"]
 
 # Application definition
 
-SITE_ID=2
+SITE_ID=3
 
 INSTALLED_APPS = [
     'django.contrib.admin',

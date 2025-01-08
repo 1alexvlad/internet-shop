@@ -25,11 +25,11 @@ def send_email(subject, message, user_email):
         fail_silently=False,
     )
 
-def send_confirmation_email(user):
+def send_confirmation_email(user_email, user):
     confirmation_link = generate_activation_link(user)
     subject = 'Подтверждение регистрации'
     message = f"Пожалуйста, подтвердите ваш аккаунт, перейдя по ссылке: {confirmation_link}"
-    send_email(subject, message, user.email)
+    send_email(subject, message, user_email)
 
 
 def send_password_reset_email(user):

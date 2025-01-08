@@ -17,7 +17,6 @@ from cart.models import Cart
 
 from .forms import LoginForm, UserCreateForm, UserUpdateForm, PasswordResetForm, EmailChangeForm
 from .tasks import send_registration_email, send_password_reset_email_task
-from .service import send_confirmation_email, send_password_reset_email
 from .tokens import account_activation_token
 
 
@@ -35,13 +34,11 @@ class RegistrationView(CreateView):
         user.is_active = False
         user.save()
         
-        auth.login(self.request, user)
+        auth.login(self.request, user, backend='django.contrib.auth.backends.ModelBackend')
 
         messages.success(self.request, 'Письмо для подтверждения аккаунта было отправлено на указанную почту.')
         
-        confirmation_link = send_confirmation_email(user)
-        send_registration_email.delay(user.email, confirmation_link)
-        
+        send_registration_email.apply_async((user.email, user.id))
 
         if session_key:
                 Cart.objects.filter(session_key=session_key).update(user=user)
@@ -179,7 +176,7 @@ class PasswordChangeView(View):
             email = form.cleaned_data['email']
             try:
                 user = User.objects.get(email=email)
-                send_password_reset_email_task.delay(user.email, user.id)          
+                send_password_reset_email_task.apply_async((user.email, user.id))         
                 messages.success(request, "Ссылка для сброса пароля была отправлена на ваш email.")
             except User.DoesNotExist:
                 messages.error(request, 'Пользователь с таким email не найден')
