@@ -51,6 +51,8 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
     'rosetta',
+    'django_filters',
+
 ]
 
 SOCIALACCOUNT_PROVIDERS = {
@@ -127,7 +129,6 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.SessionAuthentication',
        ],
-    
 }
 
 
